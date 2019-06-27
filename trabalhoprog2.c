@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-/*int tabuleiroJogo(int m, char tabuleiro[][m], char tabuleirofc[][m])
+int tabuleiroJogo(int m, char tabuleiro[][100], char tabuleirofc[][m])
 {
     int i,j,h;
 
@@ -30,10 +30,20 @@
     return 0; 
 }
 
-int conferePalavras(int m, char tabuleiro[][m], char tabuleirofc[][m], char palavras[][16], int np, int x, int y)
+int conferePalavras(int m, char tabuleiro[][100], char tabuleirofc[][m], char palavras[][16], int np, int x, int y)
 {
     int i, j, ok, len, comp, pos;
     char string[16];
+
+    for (i=0;i<m;i++)
+    {
+        for (j=0;j<m;j++)
+            printf("%c", tabuleiro[i][j]);
+
+        printf("\n");
+    }
+
+    printf("\n");
 
     printf("Coordenadas: %d %d\n", x, y);
 
@@ -41,7 +51,7 @@ int conferePalavras(int m, char tabuleiro[][m], char tabuleirofc[][m], char pala
 
     for (i=0;i<np*2;i++)
     {
-        if (tabuleiro[x][y]== palavras[0][i]) //Confere se alguma palavra do tabuleiro começa com a letra da posição indicada.
+        if (tabuleiro[x][y]== palavras[i][0]) //Confere se alguma palavra do tabuleiro começa com a letra da posição indicada.
         {
             printf("Entrou aqui no loop %d\n", i);
 
@@ -57,31 +67,21 @@ int conferePalavras(int m, char tabuleiro[][m], char tabuleirofc[][m], char pala
             }
             if (strcmp(string,palavras[pos]))
             {
-                printf("A palavra tá aqui\n");
-                printf("Palavra: %s\n", string);
-                printf("Na matriz: %s\n", palavras[pos]);
-
-                ok = 1;
-
-                break;
-            }
-            else
-            {
-                printf("Nao foi irmao\n");
-            }            
+                
+            }         
         }
     }
     return ok;
 }
 
-void execJogo(char *j1, char *j2, int m, char tabuleiro[][m], char palavras[][16],int nj, int np, char tabuleirofc[][m])
+void execJogo(char *j1, char *j2, int m, char tabuleiro[][100], char palavras[][16],int nj, int np, char tabuleirofc[][m])
 {
     int r1=0, r2=0;
     int p1=0, p2=0;
-    int i, ok;
+    int i, ok, j;
     int x, y;
 
-   *while ((r1<np && r2<np) || n1<nj && n2<nj)
+   //while ((r1<np && r2<np) || n1<nj && n2<nj)
 
     printf("\n");
         
@@ -98,16 +98,23 @@ void execJogo(char *j1, char *j2, int m, char tabuleiro[][m], char palavras[][16
 
     printf("\n%s por favor entre com as coordenadas para sua jogada:\n", j1);
 
-    scanf("%d%d", &x, &y);
+    scanf("%d %d", &x, &y);
 
     //Confere se uma palavra foi encontrada
 
-    printf("Posição x,y: %c\n", tabuleiro[x][y]);
+    for (i=0;i<m;i++)
+    {
+        for (j=0;j<m;j++)
+            printf("%c", tabuleiro[i][j]);
+
+        printf("\n");
+    }
+    printf("\n\n");
 
     ok = conferePalavras(m,tabuleiro,tabuleirofc,palavras,np,x,y);
 
     //fimDeJogo(p1,p2);    
-}*/
+}
 
 /*void fimDeJogo (int p1, int p2)
 {
@@ -162,7 +169,7 @@ int main(int argc, char *argv)
 
     char palavras[25][16];
 
-    int m, n, nj, np;
+    int m, n, nj, np, i, j;
 
     FILE *pont_config;
     FILE *pont_saida;
@@ -178,13 +185,14 @@ int main(int argc, char *argv)
     {
         fscanf(pont_config,"%d\n", &nj);
 
-        fscanf(pont_config,"%d\n", &m);
+        fscanf(pont_config,"%d", &m);
 
-        for (n=0;n<m*2;n++)
+        fgetc(pont_config);
+
+        for (i=0;i<m;i++)
         {
-            fgets(tabuleiro[n],m+1,pont_config);
+            fscanf(pont_config,"%s", tabuleiro[i]);     
         }
-
         fscanf(pont_config,"%d\n", &np);
 
         for (n=0;n<np*2;n++)
@@ -208,14 +216,7 @@ int main(int argc, char *argv)
 
     criaTabuleiro(m,tabuleirofc);
 
-    pont_saida = fopen("saida.txt", "w");
-
-    for (n=0;n<m*2;n++)
-        fprintf(pont_saida,"%s", tabuleiro[n]);
-
-    fclose(pont_saida);
-
-    //execJogo(j1,j2,m,tabuleiro,palavras,nj,np,tabuleirofc);
+    execJogo(j1,j2,m,tabuleiro,palavras,nj,np,tabuleirofc);
 
     return 0;
 }
