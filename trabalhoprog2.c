@@ -3,94 +3,275 @@
 #include <string.h>
 #include <ctype.h>
 
-int confereHorizontalDireita(int x, int y, int len, char string[], char tabuleiro[][100], char palavras[][16], char tabuleirofc[][100], int pos)
+int confereHorizontalDireita(int m, int x, int y, int len, char tabuleiro[][100], char palavras[][16], char tabuleirofc[][m], int pos)
 {
-    int i, j, ok;
+    int i, j, n=0;
 
     for (i=0,j=y;i<len;i++,j++)
     {
-        string[i]=tabuleiro[x][j];
-    }
-
-    for (i=0;i<16;i++)
-    {
-        if (palavras[pos][i]<='a' && palavras[pos][i]>='z')
-        {
-            printf("%d %d\n", i, string[i]);
+        if (j>m)
             break;
-        }        
+
+        if (tabuleiro[x][j]==palavras[pos][i])
+            n++;
     }
 
-    printf("Tamanho: %d\n", len);
-
-    printf("\nComparando (%c) com (%c)\n", string[5], palavras[pos][5]);
-
-    ok = strcmp(string,palavras[pos]);
-
-    printf("O valor retornado foi: %d\n", ok);
-
-    if (!ok)
+    if (n==len)
     {
-        printf("ENTROU AQUI!!!!!!!!\n");
         for (i=y,j=0;i<len,j<len;i++,j++)
         {
-            if (tabuleiro[x][i]=='-')
-                tabuleirofc[x][i]=string[j];
+            if (tabuleirofc[x][i]=='-')
+                tabuleirofc[x][i]=tabuleiro[x][i];
         }
     return 1;
     }
     return 0;
 }
 
-/*int confereHorizontalEsquerda(int x, int y, int len, char string[], char tabuleiro[][100], char palavras[][16], char tabuleirofc[][100])
+int confereHorizontalEsquerda(int m, int x, int y, int len, char tabuleiro[][100], char palavras[][16], char tabuleirofc[][m], int pos)
 {
+    int i, j, n=0;
 
-}
-
-int confereVerticalCima(int x, int y, int len, char string[], char tabuleiro[][100], char palavras[][16], char tabuleirofc[][100])
-{
-
-}
-
-int confereVerticalBaixo(int x, int y, int len, char string[], char tabuleiro[][100], char palavras[][16], char tabuleirofc[][100])
-{
-
-}
-
-int confereDiagonalBaixoDireita(int x, int y, int len, char string[], char tabuleiro[][100], char palavras[][16], char tabuleirofc[][100])
-{
-    for (h=0,i=x,j=y;i<len;i++,j++,h++)
+    for (i=0,j=y;i<len;i++,j--)
     {
-        string[h]=tabuleiro[i][j];
+        if (j<0)
+            break;
+
+        if (tabuleiro[x][j]==palavras[pos][i])
+            n++;
     }
 
-    printf("A palavra formada foi: %s e a sera comparada com %s\n", string, palavras[pos]);
-            
-    if (strcmp(string,palavras[pos])==0)
+    if (n==len)
     {
-        for (h=0,i=x,j=y;h<len;j++,i++,h++)
+        for (i=y,j=0;j<len;i--,j++)
         {
-            tabuleirofc[i][j]=string[h];
+            if (tabuleirofc[x][i]=='-')
+                tabuleirofc[x][i]=tabuleiro[x][i];
+        }
+    return 1;
+    }
+    return 0;
+}
+
+int confereVerticalCima(int m, int x, int y, int len, char tabuleiro[][100], char palavras[][16], char tabuleirofc[][m], int pos)
+{
+    int i, j, n=0;
+
+    for (i=x,j=0;j<len;i--,j++)
+    {
+        if (i<0)
+            break;
+
+        if (tabuleiro[i][y]==palavras[pos][j])
+            n++;
+    }
+
+    if (n==len)
+    {
+        for (i=x,j=0;j<len;i--,j++)
+        {
+            if (tabuleirofc[i][y]=='-')
+                tabuleirofc[i][y]=tabuleiro[i][y];
+        }
+    return 1;
+    }
+    return 0;
+}
+
+int confereVerticalBaixo(int m, int x, int y, int len, char tabuleiro[][100], char palavras[][16], char tabuleirofc[][m], int pos)
+{
+    int i, j, n=0;
+
+    for (i=x,j=0;j<len;i++,j++)
+    {
+        if (i>m)
+            break;
+
+        if (tabuleiro[i][y]==palavras[pos][j])
+            n++;
+    }
+
+    if (n==len)
+    {
+        for (i=x,j=0;j<len;i++,j++)
+        {
+            if (tabuleirofc[i][y]=='-')
+                tabuleirofc[i][y]=tabuleiro[i][y];
+        }
+    return 1;
+    }
+    return 0;
+}
+
+int confereDiagonalBaixoDireita(int m, int x, int y, int len, char tabuleiro[][100], char palavras[][16], char tabuleirofc[][m], int pos)
+{
+    int i, j, n=0, h=0;
+
+    for (i=x,j=y;j<len;i++,j++)
+    {
+        if (i>m && j>m)
+            break;
+
+        if (tabuleiro[i][j]==palavras[pos][h])
+            n++;
+
+        h++;
+    }
+
+    if (n==len)
+    {
+        for (i=x,j=y;j<len;i++,j++)
+        {
+            if (tabuleirofc[i][j]=='-')
+                tabuleirofc[i][j]=tabuleiro[i][j];
+        }
+    return 1;
+    }
+    return 0;
+}
+
+int confereDiagonalBaixoEsquerda(int m, int x, int y, int len, char tabuleiro[][100], char palavras[][16], char tabuleirofc[][m], int pos)
+{
+    int i, j, n=0, h=0;
+
+    for (i=x,j=y;h<len;i++,j--)
+    {
+        if (i>m && j<0)
+            break;
+
+        if (tabuleiro[i][j]==palavras[pos][h])
+            n++;
+
+        h++;
+    }
+
+    if (n==len)
+    {
+        for (h=0,i=x,j=y;h<len;i++,j--)
+        {
+            if (tabuleirofc[i][j]=='-')
+            {
+                tabuleirofc[i][j]=tabuleiro[i][j];
+            }
+            h++;
+        }
+    return 1;
+    }
+    return 0;
+}
+
+int confereDiagonalCimaDireita(int m, int x, int y, int len, char tabuleiro[][100], char palavras[][16], char tabuleirofc[][m], int pos)
+{
+    int i, j, n=0, h=0;
+
+    for (i=x,j=y;h<len;i--,j++)
+    {
+        if (i<0 && j>m)
+            break;
+
+        if (tabuleiro[i][j]==palavras[pos][h])
+            n++;
+
+        h++;
+    }
+
+    if (n==len)
+    {
+        for (h=0,i=x,j=y;h<len;i--,j++)
+        {
+            if (tabuleirofc[i][j]=='-')
+            {
+                tabuleirofc[i][j]=tabuleiro[i][j];
+            }
+            h++;
+        }
+    return 1;
+    }
+    return 0;
+}
+
+int confereDiagonalCimaEsquerda(int m, int x, int y, int len, char tabuleiro[][100], char palavras[][16], char tabuleirofc[][m], int pos)
+{
+    int i, j, n=0, h=0;
+
+    for (i=x,j=y;h<len;i--,j--)
+    {
+        if (i<0 && j<0)
+            break;
+
+        if (tabuleiro[i][j]==palavras[pos][h])
+            n++;
+
+        h++;
+    }
+
+    if (n==len)
+    {
+        for (h=0,i=x,j=y;h<len;i--,j--)
+        {
+            if (tabuleirofc[i][j]=='-')
+            {
+                tabuleirofc[i][j]=tabuleiro[i][j];
+            }
+            h++;
+        }
+    return 1;
+    }
+    return 0;
+}
+
+int conferePalavras(int m, char tabuleiro[][100], char tabuleirofc[][m], char palavras[][16], int np, int x, int y)
+{
+    int i, j, ok, len, pos;
+
+    for (i=0;i<np*2;i++)
+    {
+        if (tabuleiro[x][y]==palavras[i][0]) //Confere se alguma palavra começa com a letra da posição indicada.
+        {
+            len = strlen(palavras[i]);
+
+            pos = i;
+
+            //Confere se a palavra está na horizontal para a direita e se estiver, irá exibi-la na proxima jogada
+
+            if (ok=confereHorizontalDireita(m,x,y,len,tabuleiro,palavras,tabuleirofc,pos))
+                break;
+
+            if (ok=confereHorizontalEsquerda(m,x,y,len,tabuleiro,palavras,tabuleirofc,pos))   
+                break;
+
+            if (ok=confereVerticalCima(m,x,y,len,tabuleiro,palavras,tabuleirofc,pos))
+                break;
+
+            if (ok=confereVerticalBaixo(m,x,y,len,tabuleiro,palavras,tabuleirofc,pos))
+                break;
+
+            if (ok=confereDiagonalBaixoDireita(m,x,y,len,tabuleiro,palavras,tabuleirofc,pos))
+                break;
+
+            if (ok=confereDiagonalBaixoEsquerda(m,x,y,len,tabuleiro,palavras,tabuleirofc,pos))
+                break;
+
+            if (ok=confereDiagonalCimaDireita(m,x,y,len,tabuleiro,palavras,tabuleirofc,pos))
+                break;
+            
+            if (ok=confereDiagonalCimaEsquerda(m,x,y,len,tabuleiro,palavras,tabuleirofc,pos))
+                break;          
         }
     }
+    tabuleirofc[x][y]=toupper(tabuleiro[x][y]);
+
+    if (ok==1)
+    {
+        if (pos>np-1)
+            return 2;
+        else
+            return 1;        
+    }
+    return 0;
 }
 
-int confereDiagonalBaixoEsquerda(int x, int y, int len, char string[], char tabuleiro[][100], char palavras[][16], char tabuleirofc[][100])
-{
-
-}
-
-int confereDiagonalCimaDireita(int x, int y, int len, char string[], char tabuleiro[][100], char palavras[][16], char tabuleirofc[][100])
-{
-
-}
-
-int confereDiagonalCimaEsquerda(int x, int y, int len, char string[], char tabuleiro[][100], char palavras[][16], char tabuleirofc[][100])
-{
-
-}*/
-
-void tabuleiroJogo(int m, char tabuleiro[][100], char tabuleirofc[][m])
+void tabuleiroJogo(int m, char tabuleirofc[][m])
 {
     int i,j,h;
 
@@ -117,97 +298,110 @@ void tabuleiroJogo(int m, char tabuleiro[][100], char tabuleirofc[][m])
     }
 }
 
-int conferePalavras(int m, char tabuleiro[][100], char tabuleirofc[][m], char palavras[][16], int np, int x, int y)
+void tabelaPalavras(int np, int p1, int p2, char j1[], char j2[], char palavras[][16])
 {
-    int i, j, ok, len, pos;
-    char string[16];
+    int i;
 
-    printf("Tabuleiro na posição x,y: %c\n", tabuleiro[x][y]);
-
-    for (i=0;i<np*2;i++)
-    {
-        if (tabuleiro[x][y]== palavras[i][0]) //Confere se alguma palavra do tabuleiro começa com a letra da posição indicada.
-        {
-            len = strlen(palavras[i]);
-
-            pos = i;
-
-            //Confere se a palavra está na horizontal para a direita e se estiver, irá exibi-la na proxima jogada
-
-            if (confereHorizontalDireita(x,y,len,string,tabuleiro,palavras,tabuleirofc,pos))
-                break;
-
-            /*if (confereHorizontalEsquerda(x,y,len,string,tabuleiro,palavras,tabuleirofc))   
-                break;
-
-            if (confereVerticalCima(x,y,len,string,tabuleiro,palavras,tabuleirofc))
-                break;
-
-            if (confereVerticalBaixo(x,y,len,string,tabuleiro,palavras,tabuleirofc))
-                break;
-
-            if (confereDiagonalBaixoDireita(x,y,len,string,tabuleiro,palavras,tabuleirofc))
-                break;
-
-            if (confereDiagonalBaixoEsquerda(x,y,len,string,tabuleiro,palavras,tabuleirofc))
-                break;
-
-            if (confereDiagonalCimaDireita(x,y,len,string,tabuleiro,palavras,tabuleirofc))
-                break;
+    printf("\n");
             
-            if (confereDiagonalCimaEsquerda(x,y,len,string,tabuleiro,palavras,tabuleirofc))
-                break;*/          
-        }
-    }
-    tabuleirofc[x][y]=toupper(tabuleiro[x][y]);
+    printf("|            Palavras Restantes           |\n|%-16s(%02d)|%-16s(%02d)|\n", j1, p1, j2, p2);
+    printf("|--------------------|--------------------|\n");
 
-    return ok;
+    for (i=0;i<np;i++)
+    {
+        printf("|%-20s", palavras[i]);
+        printf("|");
+        printf("%-20s|\n", palavras[np+i]);
+    }
+}
+
+void fimDeJogo (int m, int p1, int p2, char j1[], char j2[], char palavras[][16], char tabuleirofc[][m], int np)
+{
+    int i;
+
+    tabelaPalavras(np,p1,p2,j1,j2,palavras);
+
+    tabuleiroJogo(m,tabuleirofc);
+
+    if (p1>p2)
+        printf("\n%s Ganhou!!!\n", j1);
+    else if (p2>p1)
+        printf("\n%s Ganhou!!!\n", j2);
+    else
+        printf("\nEmpate\n");
 }
 
 void execJogo(char *j1, char *j2, int m, char tabuleiro[][100], char palavras[][16],int nj, int np, char tabuleirofc[][m])
 {
     int r1=0, r2=0;
     int p1=0, p2=0;
-    int i, ok, j;
-    int x, y;
+    int ntotal=0;
+    int i, ok, j, cont=1;
+    int x, y, r=0;
 
-   //while ((r1<np && r2<np) || n1<nj && n2<nj)
-
-    printf("\n");
-        
-    printf("|            Palavras Restantes           |\n|%-16s(%02d)|%-16s(%02d)|\n", j1, p1, j2, p2);
-    printf("|--------------------|--------------------|\n");
-
-    for (i=0;i<np;i++)
+    while ((r1<np && r2<np) && ntotal<nj)
     {
-        printf("|%-20s|", palavras[i]);
-        printf("%-20s|\n", palavras[np+i]);
+        tabelaPalavras(np,p1,p2,j1,j2,palavras);
+
+        tabuleiroJogo(m,tabuleirofc);
+
+        if (cont==1)
+            printf("\n%s por favor entre com as coordenadas para sua jogada:\n", j1);
+        else
+            printf("\n%s por favor entre com as coordenadas para sua jogada:\n", j2);
+
+        while (r==0)
+        {
+            scanf("%d %d", &x, &y);
+
+            if (x>m || x<0 || y>m || y<0)
+            {
+                if (cont==1)
+                    printf("Coordenadas fora do tabuleiro. %s por favor entre com novas coordenadas para sua jogada:\n", j1);
+                else
+                    printf("Coordenadas fora do tabuleiro. %s por favor entre com novas coordenadas para sua jogada:\n", j2);
+            }
+            else
+                r=1;
+        }
+        r=0;
+
+        //Confere se uma palavra foi encontrada e se sim, exibe-a
+
+        ok = conferePalavras(m,tabuleiro,tabuleirofc,palavras,np,x,y);
+
+        if (ok==1)
+        {
+            //removePalavra();
+
+            if (cont==1)
+                p1+=2;
+            else
+                p1++;
+
+            r1++;
+        }
+        else if (ok==2)
+        {
+            //removePalavra();
+
+            if (cont==1)
+                p2++;
+            else
+                p2+=2;
+
+            r2++;
+        }
+        cont++;
+
+        if (cont==2)
+        {
+            ntotal++;
+            cont=0;
+        }     
     }
-
-    tabuleiroJogo(m,tabuleiro,tabuleirofc);
-
-    printf("\n%s por favor entre com as coordenadas para sua jogada:\n", j1);
-
-    scanf("%d %d", &x, &y);
-
-    //Confere se uma palavra foi encontrada e se sim, exibe-a
-
-    ok = conferePalavras(m,tabuleiro,tabuleirofc,palavras,np,x,y);
-
-    tabuleiroJogo(m,tabuleiro,tabuleirofc);
-
-    //fimDeJogo(p1,p2);    
+    fimDeJogo(m,p1,p2,j1,j2,palavras,tabuleirofc,np);    
 }
-
-/*void fimDeJogo (int p1, int p2)
-{
-    if (p1>p2)
-        printf("%s Ganhou!!!", j1);
-    else if (p2>p1)
-        printf("%s Ganhou!!!", j2);
-    else (p1==p2)
-        printf("Empate");
-}*/
 
 void limpaMat(char palavras[][16],int np, int m, char tabuleiro[][m])
 {
@@ -218,16 +412,16 @@ void limpaMat(char palavras[][16],int np, int m, char tabuleiro[][m])
         {
             if (palavras[i][j]=='\n')
             {
-                palavras[i][j]=' ';
+                palavras[i][j]='\0';
             }
         }
 
     for (i=0;i<m;i++)
         for (j=0;j<m;j++)
         {
-            if (tabuleiro[m][m]=='\n')
+            if (tabuleiro[i][j]=='\n')
             {
-                tabuleiro[m][m]=' ';
+                tabuleiro[i][j]='\0';
             }
         }
 }
