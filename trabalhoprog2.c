@@ -3,6 +3,16 @@
 #include <string.h>
 #include <ctype.h>
 
+typedef struct Estatisticas{
+    int p1r;
+    int p1f;
+    int p2r;
+    int p2f;
+    
+}
+
+void arquivoEstatisticas()
+
 int confereHorizontalDireita(int m, int x, int y, int len, char tabuleiro[][100], char palavras[][16], char tabuleirofc[][m], int pos)
 {
     int i, j, n=0;
@@ -309,8 +319,7 @@ void tabelaPalavras(int np, int p1, int p2, char j1[], char j2[], char palavras[
 
     for (i=0;i<np;i++)
     {
-        printf("|%-20s", palavras[i]);
-        printf("|");
+        printf("|%-20s|", palavras[i]);
         printf("%-20s|\n", palavras[np+i]);
     }
 }
@@ -329,6 +338,15 @@ void fimDeJogo (int m, int p1, int p2, char j1[], char j2[], char palavras[][16]
         printf("\n%s Ganhou!!!\n", j2);
     else
         printf("\nEmpate\n");
+}
+
+void removePalavra(int np, char palavras[][16])
+{
+    int i, j;
+
+
+
+
 }
 
 void execJogo(char *j1, char *j2, int m, char tabuleiro[][100], char palavras[][16],int nj, int np, char tabuleirofc[][m])
@@ -449,7 +467,6 @@ int main(int argc, char *argv)
     int m, n, nj, np, i, j;
 
     FILE *pont_config;
-    FILE *pont_saida;
 
     pont_config = fopen("config.txt", "r");
 
