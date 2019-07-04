@@ -12,6 +12,52 @@ typedef struct Estatisticas{
 }
 
 void arquivoEstatisticas()
+{
+
+}
+
+void arquivoInicializacao(char j1[], char j2[], char palavras[][16], int np)
+{
+    int i,j,m;
+    char maior1[16];
+    char maior2[16];
+
+    m = strlen(palavras[0]);
+
+    for (i=1;i<np;i++)
+    {
+        if (strlen(palavras[i])>strlen(maior1))
+            maior1 = palavras[i];
+    }
+    m = strlen(palavras[np]);
+
+    for (i=np+1;i<np*2;i++)
+    {
+        if (strlen(palavras[i])>strlen(maior2))
+            maior2 = palavras[i];
+    }
+
+    FILE *ini;
+
+    ini = fopen("Inicializacao.txt","w");
+
+    if (ini==NULL)
+    {
+        printf("Nao foi possivel gerar o arquivo inicializacao\n");
+    }
+    else
+    {
+        fprintf(ini,"--Jogador 1--\n");
+        fprintf(ini,"Nome: %s\nPalavras:\n", j1);
+        
+        for (i=0;i<np;i++)
+            fprintf(ini,"%s\n", palavras[i]);
+
+        printf("Maior palavra:\n%s\n", maior1);
+
+
+    }
+}
 
 int confereHorizontalDireita(int m, int x, int y, int len, char tabuleiro[][100], char palavras[][16], char tabuleirofc[][m], int pos)
 {
@@ -418,7 +464,9 @@ void execJogo(char *j1, char *j2, int m, char tabuleiro[][100], char palavras[][
             cont=0;
         }     
     }
-    fimDeJogo(m,p1,p2,j1,j2,palavras,tabuleirofc,np);    
+    //arquivoEstatisticas();
+
+    fimDeJogo(m,p1,p2,j1,j2,palavras,tabuleirofc,np);
 }
 
 void limpaMat(char palavras[][16],int np, int m, char tabuleiro[][m])
