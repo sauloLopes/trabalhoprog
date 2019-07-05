@@ -9,32 +9,121 @@ typedef struct Estatisticas{
     int p2r;
     int p2f;
     
-}
+}tStats;
 
-void arquivoEstatisticas()
+typedef struct letras{
+    char inicial;
+    int qnt;
+}tIniciais;
+
+/*void arquivoEstatisticas()
 {
 
-}
+}*/
 
 void arquivoInicializacao(char j1[], char j2[], char palavras[][16], int np)
 {
-    int i,j,m;
-    char maior1[16];
-    char maior2[16];
+    int i, j, h, m, in1=np, in2=np, cont=1;
+    int maior1, maior2;
+    char auxc;
+    int auxi;
+    tIniciais v1[25];
+    tIniciais v2[25];
 
     m = strlen(palavras[0]);
+    maior1 = 0;
 
     for (i=1;i<np;i++)
     {
-        if (strlen(palavras[i])>strlen(maior1))
-            maior1 = palavras[i];
+        if (strlen(palavras[i]) > m)
+        {
+            m = strlen(palavras[i]);
+            maior1 = i;
+        }
     }
     m = strlen(palavras[np]);
+    maior2 = np;
 
     for (i=np+1;i<np*2;i++)
     {
-        if (strlen(palavras[i])>strlen(maior2))
-            maior2 = palavras[i];
+        if (strlen(palavras[i]) > m)
+        {
+            m = strlen(palavras[i]);
+            maior2 = i;
+        }
+    }
+
+    for (i=0,j=np;i<np;i++,j++)
+    {
+        v1[i].inicial=palavras[i][0];
+        v2[i].inicial=palavras[j][0];
+    }
+    for (i=0;i<np;i++)
+    {
+        for (j=i+1;j<np;j++)
+        {
+            if (v1[j].inicial==v1[i].inicial)
+            {
+                for (h=j;h<np;h++)
+                {
+                    v1[h].inicial = v1[h+1].inicial;
+                }
+                in1--;
+                cont++;
+            }
+        }
+        v1[i].qnt = cont;
+        cont = 1;
+    }
+    for (i=0;i<np;i++)
+    {
+        for (j=i+1;j<np;j++)
+        {
+            if (v2[j].inicial==v2[i].inicial)
+            {
+                for (h=j;h<np;h++)
+                {
+                    v2[h].inicial = v2[h+1].inicial;
+                }
+                in2--;
+                cont++;
+            }
+        }
+        v2[i].qnt = cont;
+        cont = 1;
+    }
+
+    for (j=0;j<in1;j++)
+    {
+        for (i=0;i<in1-1;i++)
+        {
+            if (v1[i].inicial > v1[i+1].inicial)
+            {
+                auxc = v1[i].inicial;
+                v1[i].inicial = v1[i+1].inicial;
+                v1[i+1].inicial = auxc;
+
+                auxi = v1[i].qnt;
+                v1[i].qnt = v1[i+1].qnt;
+                v1[i+1].qnt = auxi;
+            }
+        }
+    }
+    for (j=0;j<in2;j++)
+    {
+        for (i=0;i<in2-1;i++)
+        {
+            if (v2[i].inicial > v2[i+1].inicial)
+            {
+                auxc = v2[i].inicial;
+                v2[i].inicial = v2[i+1].inicial;
+                v2[i+1].inicial = auxc;
+
+                auxi = v2[i].qnt;
+                v2[i].qnt = v2[i+1].qnt;
+                v2[i+1].qnt = auxi;
+            }
+        }
     }
 
     FILE *ini;
@@ -53,10 +142,29 @@ void arquivoInicializacao(char j1[], char j2[], char palavras[][16], int np)
         for (i=0;i<np;i++)
             fprintf(ini,"%s\n", palavras[i]);
 
-        printf("Maior palavra:\n%s\n", maior1);
+        fprintf(ini,"Maior palavra:\n%s\n", palavras[maior1]);
 
+        fprintf(ini,"Letras iniciais:\n");
 
+        for(i=0;i<in1;i++)
+            fprintf(ini,"%c -> %d\n", v1[i].inicial, v1[i].qnt);
+
+        fprintf(ini,"\n");
+
+        fprintf(ini,"--Jogador 2--\n");
+        fprintf(ini,"Nome: %s\nPalavras:\n", j2);
+        
+        for (i=np;i<np*2;i++)
+            fprintf(ini,"%s\n", palavras[i]);
+
+        fprintf(ini,"Maior palavra:\n%s\n", palavras[maior2]);
+
+        fprintf(ini,"Letras iniciais:\n");
+
+        for(i=0;i<in2;i++)
+            fprintf(ini,"%c -> %d\n", v2[i].inicial, v2[i].qnt);
     }
+    fclose(ini);
 }
 
 int confereHorizontalDireita(int m, int x, int y, int len, char tabuleiro[][100], char palavras[][16], char tabuleirofc[][m], int pos)
@@ -386,14 +494,14 @@ void fimDeJogo (int m, int p1, int p2, char j1[], char j2[], char palavras[][16]
         printf("\nEmpate\n");
 }
 
-void removePalavra(int np, char palavras[][16])
+/*void removePalavra(int np, char palavras[][16])
 {
     int i, j;
 
 
 
 
-}
+}*/
 
 void execJogo(char *j1, char *j2, int m, char tabuleiro[][100], char palavras[][16],int nj, int np, char tabuleirofc[][m])
 {
@@ -465,6 +573,8 @@ void execJogo(char *j1, char *j2, int m, char tabuleiro[][100], char palavras[][
         }     
     }
     //arquivoEstatisticas();
+
+    arquivoInicializacao(j1,j2,palavras,np);
 
     fimDeJogo(m,p1,p2,j1,j2,palavras,tabuleirofc,np);
 }
