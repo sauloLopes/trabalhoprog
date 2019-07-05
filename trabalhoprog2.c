@@ -16,10 +16,22 @@ typedef struct letras{
     int qnt;
 }tIniciais;
 
-/*void arquivoEstatisticas()
+void arquivoEstatisticas(tStats est, int p1, int p2, char j1[], char j2[], int numero_jog[50], int jogA)
 {
+    FILE *sta;
 
-}*/
+    sta = fopen("Estatistica.txt","w");
+
+    fprintf(sta,"--------------\n--- PONTOS ---\n--------------\n\n");
+
+    fprintf(sta,"%s\nFeitos: %d\nRecebidos: %d\nTotal: %d\n\n", j1, est.p1f, est.p1r, p1);
+
+    fprintf(sta,"%s\nFeitos: %d\nRecebidos: %d\nTotal: %d\n\n", j2, est.p2f, est.p2r, p2);
+
+    fprintf(sta,"---------------------------\n--- PALAVRAS POR PONTOS ---\n---------------------------");
+
+    fclose(sta);
+}
 
 void arquivoInicializacao(char j1[], char j2[], char palavras[][16], int np)
 {
@@ -384,7 +396,7 @@ int confereDiagonalCimaEsquerda(int m, int x, int y, int len, char tabuleiro[][1
     return 0;
 }
 
-int conferePalavras(int m, char tabuleiro[][100], char tabuleirofc[][m], char palavras[][16], int np, int x, int y)
+int conferePalavras(int m, char tabuleiro[][100], char tabuleirofc[][m], char palavras[][16], int np, int x, int y, int numero_jog[50], int jogA)
 {
     int i, j, ok, len, pos;
 
@@ -427,10 +439,12 @@ int conferePalavras(int m, char tabuleiro[][100], char tabuleirofc[][m], char pa
 
     if (ok==1)
     {
+        numero_jog[pos] = jogA;
+
         if (pos>np-1)
             return 2;
         else
-            return 1;        
+            return 1;   
     }
     return 0;
 }
@@ -465,8 +479,6 @@ void tabuleiroJogo(int m, char tabuleirofc[][m])
 void tabelaPalavras(int np, int p1, int p2, char j1[], char j2[], char palavras[][16])
 {
     int i;
-
-    printf("\n");
             
     printf("|            Palavras Restantes           |\n|%-16s(%02d)|%-16s(%02d)|\n", j1, p1, j2, p2);
     printf("|--------------------|--------------------|\n");
@@ -503,13 +515,38 @@ void fimDeJogo (int m, int p1, int p2, char j1[], char j2[], char palavras[][16]
 
 }*/
 
-void execJogo(char *j1, char *j2, int m, char tabuleiro[][100], char palavras[][16],int nj, int np, char tabuleirofc[][m])
+int confereJogada(int x, int y, int jogadas[][100])
+{
+    int i, j;
+
+    if (jogadas[x][y]==1)
+        return 1;
+
+    return 0;
+}
+
+void execJogo(char *j1, char *j2, int m, char tabuleiro[][100], char palavras[][16],int nj, int np, char tabuleirofc[][m], int jogadas[][100], int numero_jog[50])
 {
     int r1=0, r2=0;
     int p1=0, p2=0;
+    int jog1=1, jog2=1;
     int ntotal=0;
     int i, ok, j, cont=1;
     int x, y, r=0;
+    int pont;
+    int vpont[50];
+    tStats est;
+    int jogA=0;
+    est.p1f = 0;
+    est.p2f = 0;
+    est.p1r = 0;
+    est.p2r = 0;
+
+    for (i=0;i<np*2;i++)
+    {
+        vpont[i] = 0
+        numero_jog[i] = 0;
+    }
 
     while ((r1<np && r2<np) && ntotal<nj)
     {
@@ -524,44 +561,91 @@ void execJogo(char *j1, char *j2, int m, char tabuleiro[][100], char palavras[][
 
         while (r==0)
         {
-            scanf("%d %d", &x, &y);
-
-            if (x>m || x<0 || y>m || y<0)
+            if(scanf("%d %d", &x, &y)!=2)
             {
                 if (cont==1)
-                    printf("Coordenadas fora do tabuleiro. %s por favor entre com novas coordenadas para sua jogada:\n", j1);
+                    printf("Coordenadas invalidas. %s por favor entre com novas coordenadas para sua jogada:\n", j1);
                 else
-                    printf("Coordenadas fora do tabuleiro. %s por favor entre com novas coordenadas para sua jogada:\n", j2);
+                    printf("Coordenadas invalidas. %s por favor entre com novas coordenadas para sua jogada:\n", j2);
             }
             else
-                r=1;
+            {
+                if (x>=m || x<0 || y>=m || y<0)
+                {
+                    if (cont==1)
+                        printf("Coordenadas fora do tabuleiro. %s por favor entre com novas coordenadas para sua jogada:\n", j1);
+                    else
+                        printf("Coordenadas fora do tabuleiro. %s por favor entre com novas coordenadas para sua jogada:\n", j2);
+
+                    r = 0;
+                }
+                else
+                {
+                    if (confereJogada(x,y,jogadas))
+                    {
+                        if (cont==1)
+                            printf("Coordenadas já jogadas. %s por favor entre com novas coordenadas para sua jogada:\n", j1);
+                        else
+                            printf("Coordenadas já jogadas. %s por favor entre com novas coordenadas para sua jogada:\n", j2);
+                    }
+                    else
+                    {   
+                        if (cont==1)
+                            jog1++;
+                        else
+                            jog2++;
+
+                        r++;
+                    }                
+                }
+            }
         }
         r=0;
+        jogA++;
+        
+        jogadas[x][y] = 1;
 
         //Confere se uma palavra foi encontrada e se sim, exibe-a
 
-        ok = conferePalavras(m,tabuleiro,tabuleirofc,palavras,np,x,y);
+        ok = conferePalavras(m,tabuleiro,tabuleirofc,palavras,np,x,y,numero_jog,jogA);
 
         if (ok==1)
         {
             //removePalavra();
 
             if (cont==1)
+            {
                 p1+=2;
+                est.p1f+=2;
+                pont = 2;
+            }
             else
+            {
                 p1++;
+                est.p1r++;
+                pont = 1
+            }
 
             r1++;
+
+            //infStats()
         }
         else if (ok==2)
         {
             //removePalavra();
 
             if (cont==1)
+            {
                 p2++;
+                est.p2r++;
+                pont = 1;
+            }
             else
+            {
                 p2+=2;
-
+                est.p2f+=2;
+                pont = 2;
+            }
             r2++;
         }
         cont++;
@@ -572,7 +656,7 @@ void execJogo(char *j1, char *j2, int m, char tabuleiro[][100], char palavras[][
             cont=0;
         }     
     }
-    //arquivoEstatisticas();
+    arquivoEstatisticas(est,p1,p2,j1,j2,numero_jog,jogA);
 
     arquivoInicializacao(j1,j2,palavras,np);
 
@@ -602,7 +686,7 @@ void limpaMat(char palavras[][16],int np, int m, char tabuleiro[][m])
         }
 }
 
-void criaTabuleiro(int m, char tabuleirofc[m][m])
+void inicializaMatrizes(int m, char tabuleirofc[m][m],int jogadas[][100])
 {
     int i,j;
 
@@ -610,6 +694,7 @@ void criaTabuleiro(int m, char tabuleirofc[m][m])
         for (j=0;j<m;j++)
         {
             tabuleirofc[i][j]='-';
+            jogadas[i][j] = 0;
         }
 }
 
@@ -617,10 +702,10 @@ int main(int argc, char *argv)
 {
     char j1[16];
     char j2[16];
-    
+    int jogadas[100][100];
     char tabuleiro[100][100];
-
-    char palavras[25][16];
+    char palavras[50][16];
+    int numero_jog[50];
 
     int m, n, nj, np, i, j;
 
@@ -652,6 +737,7 @@ int main(int argc, char *argv)
             fgets(palavras[n],16,pont_config);
         }
     }
+
     fclose(pont_config);
 
     printf("Nome do Jogador 1:\n");
@@ -666,9 +752,9 @@ int main(int argc, char *argv)
 
     char tabuleirofc[m][m];
 
-    criaTabuleiro(m,tabuleirofc);
+    inicializaMatrizes(m,tabuleirofc,jogadas);
 
-    execJogo(j1,j2,m,tabuleiro,palavras,nj,np,tabuleirofc);
+    execJogo(j1,j2,m,tabuleiro,palavras,nj,np,tabuleirofc,jogadas,numero_jog);
 
     return 0;
 }
