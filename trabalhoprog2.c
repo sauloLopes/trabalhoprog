@@ -16,8 +16,90 @@ typedef struct letras{
     int qnt;
 }tIniciais;
 
-void arquivoEstatisticas(tStats est, int p1, int p2, char j1[], char j2[], int numero_jog[50], int jogA)
+void arquivoEstatisticas(tStats est, int p1, int p2, char j1[], char j2[], int numero_jog[50], int jogA, int vpont[], int np, char palavras[][16])
 {
+    int i, j, aux, qnt1=0, qnt2=0, qnt0=0;
+    char auxv[16];
+
+    for (i=0;i<np;i++)
+    {
+        for (j=0;j<np-1;j++)
+        {
+            if (vpont[i]<vpont[i+1])
+            {
+                aux = vpont[i];
+                vpont[i] = vpont[i+1];
+                vpont[i+1] = aux;
+
+                strcpy(auxv,palavras[i]);
+                strcpy(palavras[i],palavras[i+1]);
+                strcpy(palavras[i+1],auxv);
+
+                aux = numero_jog[i];
+                numero_jog[i] = numero_jog[i+1];
+                numero_jog[i+1] = aux;
+            }
+        }
+    }
+    for (i=0;i<np;i++)
+    {
+        if (vpont[i]==2)
+            qnt2++;
+        else if(vpont[i]==1)
+            qnt1++;
+        else
+            qnt0++;
+    }
+
+    for (i=0;i<qnt2;i++)
+    {
+        for (j=0;j<qnt2-1;j++)
+        {
+            if (palavras[i][0]>palavras[i+1][0])
+            {
+                strcpy(auxv,palavras[i]);
+                strcpy(palavras[i],palavras[i+1]);
+                strcpy(palavras[i+1],palavras[i]);
+
+                aux = numero_jog[i];
+                numero_jog[i] = numero_jog[i+1];
+                numero_jog[i+1] = aux;
+            }
+        }
+    }
+    for (i=qnt2;i<qnt2+qnt1;i++)
+    {
+        for (j=qnt2;j<qnt2+qnt1;j++)
+        {
+            if (palavras[i][0]>palavras[i+1][0])
+            {
+                strcpy(auxv,palavras[i]);
+                strcpy(palavras[i],palavras[i+1]);
+                strcpy(palavras[i+1],palavras[i]);
+
+                aux = numero_jog[i];
+                numero_jog[i] = numero_jog[i+1];
+                numero_jog[i+1] = aux;
+            }
+        }
+    }
+    for (i=qnt2+qnt1;i<qnt2+qnt1+qnt0;i++)
+    {
+        for (i=qnt2+qnt1;i<qnt2+qnt1+qnt0;i++)
+        {
+            if (palavras[i][0]>palavras[i+1][0])
+            {
+                strcpy(auxv,palavras[i]);
+                strcpy(palavras[i],palavras[i+1]);
+                strcpy(palavras[i+1],palavras[i]);
+
+                aux = numero_jog[i];
+                numero_jog[i] = numero_jog[i+1];
+                numero_jog[i+1] = aux;
+            }
+        }
+    }
+
     FILE *sta;
 
     sta = fopen("Estatistica.txt","w");
@@ -28,7 +110,21 @@ void arquivoEstatisticas(tStats est, int p1, int p2, char j1[], char j2[], int n
 
     fprintf(sta,"%s\nFeitos: %d\nRecebidos: %d\nTotal: %d\n\n", j2, est.p2f, est.p2r, p2);
 
-    fprintf(sta,"---------------------------\n--- PALAVRAS POR PONTOS ---\n---------------------------");
+    fprintf(sta,"---------------------------\n--- PALAVRAS POR PONTOS ---\n---------------------------\n");
+
+    fprintf(sta,"|P|    Palavra     | T |\n|-|----------------|---|\n");
+
+    for (i=0;i<np;i++)
+    {
+        fprintf(sta,"|%d|%-16s|%03d|\n", vpont[i], palavras[i], numero_jog[i]);
+    }
+
+    fprintf(sta,"\n\n");
+
+    if (qnt2+qnt1+qnt0==np)
+    {
+        fprintf(sta,"DEU CERTO ESSA MERDA!!!\n");
+    }
 
     fclose(sta);
 }
@@ -440,13 +536,9 @@ int conferePalavras(int m, char tabuleiro[][100], char tabuleirofc[][m], char pa
     if (ok==1)
     {
         numero_jog[pos] = jogA;
-
-        if (pos>np-1)
-            return 2;
-        else
-            return 1;   
+        return pos;
     }
-    return 0;
+    return 150;
 }
 
 void tabuleiroJogo(int m, char tabuleirofc[][m])
@@ -515,28 +607,17 @@ void fimDeJogo (int m, int p1, int p2, char j1[], char j2[], char palavras[][16]
 
 }*/
 
-int confereJogada(int x, int y, int jogadas[][100])
-{
-    int i, j;
-
-    if (jogadas[x][y]==1)
-        return 1;
-
-    return 0;
-}
-
 void execJogo(char *j1, char *j2, int m, char tabuleiro[][100], char palavras[][16],int nj, int np, char tabuleirofc[][m], int jogadas[][100], int numero_jog[50])
 {
     int r1=0, r2=0;
     int p1=0, p2=0;
-    int jog1=1, jog2=1;
     int ntotal=0;
     int i, ok, j, cont=1;
     int x, y, r=0;
-    int pont;
+    int pont=0, pos;
     int vpont[50];
     tStats est;
-    int jogA=0;
+    int jogA=1;
     est.p1f = 0;
     est.p2f = 0;
     est.p1r = 0;
@@ -544,7 +625,7 @@ void execJogo(char *j1, char *j2, int m, char tabuleiro[][100], char palavras[][
 
     for (i=0;i<np*2;i++)
     {
-        vpont[i] = 0
+        vpont[i] = 0;
         numero_jog[i] = 0;
     }
 
@@ -581,7 +662,7 @@ void execJogo(char *j1, char *j2, int m, char tabuleiro[][100], char palavras[][
                 }
                 else
                 {
-                    if (confereJogada(x,y,jogadas))
+                    if (jogadas[x][y]==1)
                     {
                         if (cont==1)
                             printf("Coordenadas já jogadas. %s por favor entre com novas coordenadas para sua jogada:\n", j1);
@@ -589,25 +670,33 @@ void execJogo(char *j1, char *j2, int m, char tabuleiro[][100], char palavras[][
                             printf("Coordenadas já jogadas. %s por favor entre com novas coordenadas para sua jogada:\n", j2);
                     }
                     else
-                    {   
-                        if (cont==1)
-                            jog1++;
-                        else
-                            jog2++;
-
+                    {
                         r++;
                     }                
                 }
             }
         }
         r=0;
-        jogA++;
         
         jogadas[x][y] = 1;
 
         //Confere se uma palavra foi encontrada e se sim, exibe-a
 
-        ok = conferePalavras(m,tabuleiro,tabuleirofc,palavras,np,x,y,numero_jog,jogA);
+        pos = conferePalavras(m,tabuleiro,tabuleirofc,palavras,np,x,y,numero_jog,jogA);
+
+        jogA++;
+        
+        if (pos!=150)
+        {
+            if (pos>np-1)
+            {
+                ok = 2;
+            }
+            else
+                ok = 1;
+        }
+        else
+            ok = 0;
 
         if (ok==1)
         {
@@ -623,7 +712,7 @@ void execJogo(char *j1, char *j2, int m, char tabuleiro[][100], char palavras[][
             {
                 p1++;
                 est.p1r++;
-                pont = 1
+                pont = 1;
             }
 
             r1++;
@@ -650,15 +739,17 @@ void execJogo(char *j1, char *j2, int m, char tabuleiro[][100], char palavras[][
         }
         cont++;
 
+        vpont[pos] = pont;
+
         if (cont==2)
         {
             ntotal++;
             cont=0;
         }     
     }
-    arquivoEstatisticas(est,p1,p2,j1,j2,numero_jog,jogA);
-
     arquivoInicializacao(j1,j2,palavras,np);
+
+    arquivoEstatisticas(est,p1,p2,j1,j2,numero_jog,jogA,vpont,np,palavras);
 
     fimDeJogo(m,p1,p2,j1,j2,palavras,tabuleirofc,np);
 }
